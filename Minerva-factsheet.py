@@ -4,20 +4,36 @@ import glob
 import time
 import duckdb
 # %%
-con = duckdb.connect('test1.db')
+con = duckdb.connect('test2.db')
+symbols_df = pd.read_csv('./minerva/symbols-data.csv')
 
-# %%
-rolling_df = pd.read_csv('./india100/rolling.csv')
+symbols_df.Symbol = symbols_df.Symbol.astype(str)
+symbols_p = symbols_df.sort_values(symbols_df.columns[2],ascending=False)[:10]
+symbols_b = symbols_df.sort_values(symbols_df.columns[3],ascending=False)[:10]
 
-# %%
-rolling_df['Date'] = pd.to_datetime(rolling_df['Date'], format='%Y')
+con.sql("CREATE TABLE symbols_p AS FROM symbols_p")
+con.sql("CREATE TABLE symbols_b AS FROM symbols_b")
+con.sql("CREATE TABLE sectors_minerva AS FROM read_csv_auto('./minerva/sector.csv')")
+con.sql("CREATE TABLE performance AS FROM read_csv_auto('./minerva/performance.csv')")
+con.sql("CREATE TABLE topcomponents AS FROM read_csv_auto('./minerva/TopComponents.csv')")
+con.sql("CREATE TABLE yrs12 AS FROM read_csv_auto('./minerva/12yrs.csv')")
+con.sql("CREATE TABLE drawdown AS FROM read_csv_auto('./minerva/drawdown.csv')")
+con.sql("CREATE TABLE metrics AS FROM read_csv_auto('./minerva/Metrics.csv')")
+con.sql("CREATE TABLE binge1 AS FROM read_csv_auto('./minerva/binge1.csv')")
+con.sql("CREATE TABLE binge2 AS FROM read_csv_auto('./minerva/binge2.csv')")
+con.sql("CREATE TABLE startdate0 AS FROM read_csv_auto('./minerva/startdate0.csv')")
+con.sql("CREATE TABLE startdate1 AS FROM read_csv_auto('./minerva/startdate1.csv')")
+con.sql("CREATE TABLE startdate2 AS FROM read_csv_auto('./minerva/startdate2.csv')")
+con.sql("CREATE TABLE startdate3 AS FROM read_csv_auto('./minerva/startdate3.csv')")
+con.sql("CREATE TABLE startdate4 AS FROM read_csv_auto('./minerva/startdate4.csv')")
+con.sql("CREATE TABLE startdate5 AS FROM read_csv_auto('./minerva/startdate5.csv')")
+con.sql("CREATE TABLE startdate6 AS FROM read_csv_auto('./minerva/startdate6.csv')")
+con.sql("CREATE TABLE startdate7 AS FROM read_csv_auto('./minerva/startdate7.csv')")
 
-
-
-# %%
-symbols_df = pd.read_csv('./india100/symbols-data.csv')
 
 #%%
+con.close()
+
 #%%
 symbols_df.Symbol = symbols_df.Symbol.astype(str)
 #%%
@@ -29,7 +45,7 @@ con.sql("CREATE TABLE rolling_india100 AS FROM rolling_df")
 
 
 # %%
-con.sql("CREATE TABLE symbols_india100 AS FROM symbols_df")
+
 con.sql("CREATE TABLE symbols_india100_p AS FROM symbols_p")
 con.sql("CREATE TABLE symbols_india100_b AS FROM symbols_b")
 con.sql("CREATE TABLE drawdownp_india100 AS FROM read_csv_auto('./india100/drawdown-p.csv')")
@@ -62,29 +78,3 @@ con.table('DROP TABLE rolling')
 # %%
 con.close()
 
-# %%
-import requests
-
-url = "https://alphablock.org/api/portfolio/portfolio-returns-benchmarks-userproducts"
-
-payload = {}
-headers = {
-  'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Im5hcG1hcmlhMThAZ21haWwuY29tIiwibmJmIjoxNjU2NzA0MDY0LCJleHAiOjE2NTY3MDUyNjQsImlhdCI6MTY1NjcwNDA2NH0.oQrjiXsXlMryzvT_oESE3Jrg40Ty4dY8Holry4Y7DR8'
-}
-
-response = requests.request("GET", url, headers=headers, data=payload)
-
-print(response.text)# %%
-
-# %%
-import requests
-
-url = "https://alphablock.org/api/landing/portfolio/performances-monthly-summary?productGuid=7ec183d6-ca7e-4f72-b601-c7c7c7d16ce6"
-
-payload = {}
-headers = {}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.text)
-# %%

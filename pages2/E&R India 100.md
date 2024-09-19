@@ -1,9 +1,4 @@
 
-<img src="header1.png" alt="header" width="300"/>
-----
-
-<br />
-<br />
 
 # <p style="text-align:center"> E&R India 100 Factsheet </p>
 
