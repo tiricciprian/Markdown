@@ -1,3 +1,10 @@
+# Short summary
+ - in 'pages' can be found 2 different Evidence pages (one for Factsheets and one for Simulations)
+ - both of them are connected to 'test2.db', a duckdb database already populated
+ - 'test2.db' was populated by running 'Minerva-factsheet.py'
+ - in 'minerva' can be found raw and processed data which is stored in .csv files
+
+
 # Evidence Template Project
 
 Welcome to Evidence. Use this project template to get started.
