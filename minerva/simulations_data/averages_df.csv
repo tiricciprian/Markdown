@@ -1,0 +1,13 @@
+Annualized Excess Return %,Annualized Excess Volatility %,Tracking Error,Information Ratio,Alpha,Beta,Max Excess Drawdown,Group,Holding Yrs
+2.97,2.49,6.25,0.61,0.09,1.08,-2.62,S&P BSE MidCap,1 Year
+2.12,2.74,6.42,0.43,0.05,1.1,-4.02,S&P BSE MidCap,2 Years
+2.3,2.8,6.56,0.42,0.08,1.1,-4.4,S&P BSE MidCap,3 Years
+5.19,5.02,9.78,0.44,0.14,1.16,-5.41,S&P BSE SmallCap,1 Year
+3.54,5.63,10.25,0.31,0.06,1.2,-8.05,S&P BSE SmallCap,2 Years
+3.62,5.91,10.52,0.36,0.1,1.22,-9.82,S&P BSE SmallCap,3 Years
+8.79,3.11,12.35,0.54,0.8,0.87,-0.1,Minerva India Under-served,1 Year
+8.32,3.46,12.78,0.55,0.69,0.91,-0.4,Minerva India Under-served,2 Years
+7.07,3.78,13.04,0.49,0.62,0.93,-1.64,Minerva India Under-served,3 Years
+-0.82,-0.37,3.22,-0.32,-0.01,0.95,0.58,Nifty 50,1 Year
+-0.72,-0.52,3.28,-0.29,0,0.94,0.63,Nifty 50,2 Years
+-0.87,-0.55,3.32,-0.32,-0.01,0.94,0.44,Nifty 50,3 Years
