@@ -8,31 +8,31 @@
 <br>
 
 
-#### **Description**
+## **Description**
 
-_Minerva India Under-served focuses on the overlooked segment of the Indian equity market, targeting shares that
+>Minerva India Under-served focuses on the overlooked segment of the Indian equity market, targeting shares that
 are institutionally under-owned and undervalued despite clear financial records and structural transparency. The
 strategy emphasizes investment in high-conviction holdings that, while free from speculative excess, are typically
 neglected by institutional investors. This approach seeks to exploit market inefficiencies caused by overly broad
-generalizations about this sector._
-
-_The fund has been highly successful, delivering a 906% return from its inception in April 2011 through February
+generalizations about this sector.
+>
+>The fund has been highly successful, delivering a 906% return from its inception in April 2011 through February
 2024, which equates to an annualized gain of over 18.5%. During the same period, the broader Indian market
 indices, including the Nifty 50, S&P BSE 500, S&P BSE MidCap, and S&P BSE Smallcap, have significantly
 underperformed compared to Minerva, with returns ranging from 11.35% to 13.99% annually. Adjusting for the
 fund's top four performing years, it still managed an impressive 9.96% annualized return, far outpacing the
-respective indices which ranged from losses to modest gains._
-
-_The performance factsheet offers a detailed view of the fund's strategy and outcomes, including sector allocation,
+respective indices which ranged from losses to modest gains.
+>
+>The performance factsheet offers a detailed view of the fund's strategy and outcomes, including sector allocation,
 performance metrics over various periods, a comparison of the top 10 holdings against benchmark constituents,
 and analysis of the fund's drawdowns and rolling performance. The strategic focus on mispriced idiosyncrasies
 within the Indian market has clearly differentiated Minerva from typical market benchmarks and conventional
-investment approaches, demonstrating the effectiveness of targeting under-served market segments._
+investment approaches, demonstrating the effectiveness of targeting under-served market segments.
 
-## Sector breakdown  
+### **Sector breakdown**
 ```sql sec
-select "Industry Sectors" as name, "Value P" as value
-from sectors_minerva
+select *
+from minerva.sec
 ```
 
 <ECharts config={
@@ -53,10 +53,10 @@ from sectors_minerva
     
 />
 
-## Performance 
+### **Performance** 
 
 ```performance
-select *  from performance
+select *  from minerva.performance
 ```
 
 <LineChart 
@@ -69,23 +69,23 @@ select *  from performance
 />
 
 
-## Metrics
+### **Metrics**
 
 ```metrics
-select *  from metrics
+select *  from minerva.metrics
 ```
 <DataTable data={metrics} />
 
-## Top 10 Components
+### **Top 10 Components**
 
 ```symbolsp
 SELECT *
-FROM symbols_p
+FROM minerva.symbols_p
 ```
 
 ```symbolsb
 SELECT *
-FROM symbols_b
+FROM minerva.symbols_b
 ```
 
 <FunnelChart 
@@ -105,11 +105,11 @@ FROM symbols_b
     connectGroup= "da"
 />
 
-## Average Annualized Returns
+### **Average Annualized Returns**
 
 ```yrs12
 SELECT *
-FROM yrs12
+FROM minerva.yrs12
 ```
 <BarChart 
     data={yrs12}
@@ -119,12 +119,12 @@ FROM yrs12
     type=grouped
 />
 
-## Drawdown Analysis
+### **Drawdown Analysis**
 
 
 ```drawdown
 SELECT *
-FROM drawdown
+FROM minerva.drawdown
 ```
 
 <LineChart 
@@ -135,11 +135,11 @@ FROM drawdown
     yfmt = num3
 />
 
-## Binge years
+### **Binge years**
 
 ```binge1
 SELECT *
-FROM binge1
+FROM minerva.binge1
 ```
 <BarChart 
     title="Historical Annualized Returns"
@@ -151,7 +151,7 @@ FROM binge1
 
 ```binge2
 SELECT *
-FROM binge2
+FROM minerva.binge2
 ```
 <BarChart
     title="Historical Annualized Returns without 2014, 2017, 2021, 2023"
@@ -161,11 +161,11 @@ FROM binge2
     series=Group
 />
 
-## Starting Point Analysis
+### **Starting Point Analysis**
 
 ```startdate0
 SELECT *
-FROM startdate0
+FROM minerva.startdate0
 ```
 <LineChart 
     data={startdate0}
@@ -177,7 +177,7 @@ FROM startdate0
 
 ```startdate1
 SELECT *
-FROM startdate1
+FROM minerva.startdate1
 ```
 <LineChart 
     data={startdate1}
@@ -189,7 +189,7 @@ FROM startdate1
 
 ```startdate2
 SELECT *
-FROM startdate2
+FROM minerva.startdate2
 ```
 <LineChart 
     data={startdate2}
@@ -201,7 +201,7 @@ FROM startdate2
 
 ```startdate3
 SELECT *
-FROM startdate3
+FROM minerva.startdate3
 ```
 <LineChart 
     data={startdate3}
@@ -214,7 +214,7 @@ FROM startdate3
 
 ```startdate4
 SELECT *
-FROM startdate4
+FROM minerva.startdate4
 ```
 <LineChart 
     data={startdate4}
@@ -226,7 +226,7 @@ FROM startdate4
 
 ```startdate5
 SELECT *
-FROM startdate5
+FROM minerva.startdate5
 ```
 <LineChart 
     data={startdate5}
@@ -238,7 +238,7 @@ FROM startdate5
 
 ```startdate6
 SELECT *
-FROM startdate6
+FROM minerva.startdate6
 ```
 <LineChart 
     data={startdate6}
@@ -250,7 +250,7 @@ FROM startdate6
 
 ```startdate7
 SELECT *
-FROM startdate7
+FROM minerva.startdate7
 ```
 <LineChart 
     data={startdate7}

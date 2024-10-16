@@ -298,7 +298,7 @@ con.sql("CREATE TABLE startdate7 AS FROM read_csv_auto('./minerva/factsheet_data
 con.close()
 
 #%%
-con = duckdb.connect('test2.db')
+con = duckdb.connect('test1.db')
 
 # %%
 full_averages = pd.read_csv('./minerva/simulations_data/full_averages.csv')
@@ -313,4 +313,149 @@ con.sql("CREATE TABLE full_data AS FROM full_data")
 con.sql("CREATE TABLE avg_table AS FROM averages_table")
 # %%
 con.close()
+
+######################## RISK DATA PREPROCESSING ####################
+
+# %%
+import pandas as pd
+
+# Load your CSV file
+data = pd.read_csv('./minerva/Minerva-Monthly-12yrs.csv')
+
+# Filter data for 'India Under-served' as the portfolio and 'S&P BSE 500' as the benchmark
+portfolio_data = data[data['Group'] == 'India Under-served'].copy()
+benchmark_data = data[data['Group'] == 'S&P BSE 500'].copy()
+
+# Ensure that Date columns are in datetime format for both datasets
+portfolio_data['Date'] = pd.to_datetime(portfolio_data['Date'], format='%m/%d/%Y')
+benchmark_data['Date'] = pd.to_datetime(benchmark_data['Date'], format='%m/%d/%Y')
+
+# Merge both dataframes on 'Date' to align the portfolio and benchmark data
+merged_data = pd.merge(portfolio_data[['Date', 'Indexed Value']], benchmark_data[['Date', 'Indexed Value']], on='Date', suffixes=('_portfolio', '_benchmark'))
+
+# Calculate monthly returns for both portfolio and benchmark
+merged_data['Portfolio_Returns'] = merged_data['Indexed Value_portfolio'].pct_change()
+merged_data['Benchmark_Returns'] = merged_data['Indexed Value_benchmark'].pct_change()
+
+# Drop the first row as it will contain NaN values due to percentage change calculation
+merged_data.dropna(inplace=True)
+
+# Set a small threshold to avoid division by near-zero downside deviations
+downside_deviation_threshold = 0.005  # Small positive number
+
+# Define a function to calculate rolling beta, information ratio, tracking error, Sharpe ratio, and Sortino ratio
+def calculate_rolling_stats_with_threshold(data, window, rolling_period):
+    # Rolling standard deviation for portfolio returns
+    rolling_std_portfolio = data['Portfolio_Returns'].rolling(window=window).std()
+
+    # Rolling standard deviation for benchmark returns
+    rolling_std_benchmark = data['Benchmark_Returns'].rolling(window=window).std()
+
+    # Rolling covariance between portfolio and benchmark
+    rolling_cov = data['Portfolio_Returns'].rolling(window=window).cov(data['Benchmark_Returns'])
+
+    # Rolling variance for benchmark returns
+    rolling_var_benchmark = data['Benchmark_Returns'].rolling(window=window).var()
+
+    # Rolling Sharpe Ratio (mean return / standard deviation)
+    rolling_sharpe = data['Portfolio_Returns'].rolling(window=window).mean() / rolling_std_portfolio
+
+    # Rolling Sortino Ratio (mean return / downside risk)
+    downside_returns = data['Portfolio_Returns'].copy()
+    downside_returns[downside_returns > 0] = 0  # Only consider negative returns
+    rolling_downside_std = downside_returns.rolling(window=window).std()
+
+    # Apply threshold to downside deviation
+    rolling_downside_std = rolling_downside_std.apply(lambda x: max(x, downside_deviation_threshold))
+
+    rolling_sortino = data['Portfolio_Returns'].rolling(window=window).mean() / rolling_downside_std
+
+    # Rolling Tracking Error (standard deviation of the difference between portfolio and benchmark returns)
+    rolling_tracking_error = (data['Portfolio_Returns'] - data['Benchmark_Returns']).rolling(window=window).std()
+
+    # Rolling Information Ratio (excess return / tracking error)
+    rolling_excess_return = data['Portfolio_Returns'].rolling(window=window).mean() - data['Benchmark_Returns'].rolling(window=window).mean()
+    rolling_information_ratio = rolling_excess_return / rolling_tracking_error
+
+    # Rolling Beta (covariance / variance of benchmark)
+    rolling_beta = rolling_cov / rolling_var_benchmark
+
+    return pd.DataFrame({
+        'Date': data['Date'],
+        'Rolling_Period': rolling_period,
+        'Rolling_Sharpe': rolling_sharpe,
+        'Rolling_Sortino': rolling_sortino,
+        'Rolling_Tracking_Error': rolling_tracking_error,
+        'Rolling_Information_Ratio': rolling_information_ratio,
+        'Rolling_Beta': rolling_beta
+    })
+
+# Calculate rolling statistics for 12, 24, and 36 months and concatenate results
+rolling_12_months = calculate_rolling_stats_with_threshold(merged_data, 12, '12 Months')
+rolling_24_months = calculate_rolling_stats_with_threshold(merged_data, 24, '24 Months')
+rolling_36_months = calculate_rolling_stats_with_threshold(merged_data, 36, '36 Months')
+
+# Concatenate results for all rolling periods
+combined_results = pd.concat([rolling_12_months, rolling_24_months, rolling_36_months]).dropna()
+
+# Separate data frames for each statistic
+sharpe_df = combined_results[['Date', 'Rolling_Period', 'Rolling_Sharpe']].rename(columns={'Rolling_Sharpe': 'Value'})
+sortino_df = combined_results[['Date', 'Rolling_Period', 'Rolling_Sortino']].rename(columns={'Rolling_Sortino': 'Value'})
+tracking_error_df = combined_results[['Date', 'Rolling_Period', 'Rolling_Tracking_Error']].rename(columns={'Rolling_Tracking_Error': 'Value'})
+information_ratio_df = combined_results[['Date', 'Rolling_Period', 'Rolling_Information_Ratio']].rename(columns={'Rolling_Information_Ratio': 'Value'})
+beta_df = combined_results[['Date', 'Rolling_Period', 'Rolling_Beta']].rename(columns={'Rolling_Beta': 'Value'})
+
+
+# Drop NaNs and display the first valid rows for each rolling window, keeping the date
+rolling_12_months_valid = rolling_12_months.dropna()
+rolling_24_months_valid = rolling_24_months.dropna()
+rolling_36_months_valid = rolling_36_months.dropna()
+
+# %%
+con = duckdb.connect('test2.db')
+
+# %%
+con.sql("CREATE TABLE rolling12 AS FROM rolling_12_months_valid")
+con.sql("CREATE TABLE rolling24 AS FROM rolling_24_months_valid")
+con.sql("CREATE TABLE rolling36 AS FROM rolling_36_months_valid")
+# %%
+con.close()
+
+# %%
+con = duckdb.connect('test2.db')
+
+# %%
+con.sql("CREATE TABLE sharpe AS FROM sharpe_df")
+con.sql("CREATE TABLE sortino_with_threshold AS FROM sortino_df")
+con.sql("CREATE TABLE information_ratio AS FROM information_ratio_df")
+con.sql("CREATE TABLE tracking_error AS FROM tracking_error_df")
+con.sql("CREATE TABLE beta AS FROM beta_df")
+
+# %%
+con.close()
+
+
+
+################# FIND HIGH SORTINO #############
+# %%
+# Find the row with the high Sortino ratio
+high_sortino = sortino_df[sortino_df['Value'] > 15]
+print("High Sortino Ratio found:")
+print(high_sortino)
+
+# Investigate the portfolio returns and downside deviation for the specific date
+date_of_high_sortino = high_sortino.iloc[0]['Date']
+
+# Get portfolio returns and downside deviations leading up to that date
+lookback_window = 12  # Assuming 12 months rolling period for the high Sortino ratio
+relevant_data = merged_data[merged_data['Date'] <= date_of_high_sortino].tail(lookback_window)
+
+# Calculate downside deviation manually for this period
+downside_returns = relevant_data['Portfolio_Returns'].copy()
+downside_returns[downside_returns > 0] = 0  # Only consider negative returns
+downside_deviation = downside_returns.std()
+
+print(f"Downside deviation for the period ending {date_of_high_sortino}: {downside_deviation}")
+print("Relevant portfolio returns:")
+print(relevant_data[['Date', 'Portfolio_Returns']])
 # %%

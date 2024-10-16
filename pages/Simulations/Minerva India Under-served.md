@@ -7,19 +7,19 @@
 <br>
 
 
-#### **Description**
+## **Description**
 
 
-_This report simulates the fund's performance from various hypothetical starting points to provide deeper insight into its risk-adjusted performance. We employ a range of visualization techniques and metrics, including histograms, box plots, cartesian plots, distributions, and data tables for cluster and MPT (Modern Portfolio Theory) analysis._
-
-_The fund simulations has delivered average positive annualized excess returns across the simulations. Another positive aspect was its marginally better outliers performance, as illustrated in the Information Ratio analytics. Even MPT statistics suggest a higher average Information Ratio and a relatively lower Maximum Drawdown. The only negative was the Cluster Analysis, where the fund simulations underperformed the S&P BSE Small Cap benchmark in terms of both return and risk._
+>This report simulates the fund's performance from various hypothetical starting points to provide deeper insight into its risk-adjusted performance. We employ a range of visualization techniques and metrics, including histograms, box plots, cartesian plots, distributions, and data tables for cluster and MPT (Modern Portfolio Theory) analysis.
+>
+>The fund simulations has delivered average positive annualized excess returns across the simulations. Another positive aspect was its marginally better outliers performance, as illustrated in the Information Ratio analytics. Even MPT statistics suggest a higher average Information Ratio and a relatively lower Maximum Drawdown. The only negative was the Cluster Analysis, where the fund simulations underperformed the S&P BSE Small Cap benchmark in terms of both return and risk.
 
 <br>
 
-## Average annualized excess returns histograms for various periods and groups  
+### **Average annualized excess returns histograms for various periods and groups**
 ```sql avg
 select *
-from full_averages
+from minerva.full_averages
 ```
 
 <BarChart 
@@ -32,7 +32,7 @@ from full_averages
 
 ```sql avg_df
 select *
-from averages_df
+from minerva.averages_df
 ```
 
 <BarChart 
@@ -46,9 +46,9 @@ from averages_df
 
 ```sql full_data
 select *
-from full_data
+from minerva.full_data
 ```
-## Cartesian plots for various statistical measures
+### **Cartesian plots for various statistical measures**
 
 <ScatterPlot 
     data={full_data}
@@ -85,11 +85,11 @@ from full_data
     series="Group"
 />
 
-## Modern portfolio theory (MPT) statistics
+### **Modern portfolio theory (MPT) statistics**
 
 ```sql avg_table
 select *
-from avg_table
+from minerva.avg_table
 ```
 ###### (**AR** - Annualized Excess Returns, **AV** - Annualized Excess Volatility, **TE** - Tracking Error, **IR** - Information Ratio)
 
